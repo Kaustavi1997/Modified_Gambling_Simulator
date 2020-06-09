@@ -116,3 +116,33 @@ simulateLuckiestUnluckiestDay(){
 	echo "unluckiest_day : $unluckiestDay  Amount : $minCurrentDiffAmount"
 }
 simulateLuckiestUnluckiestDay
+
+totalWin=0
+totalLose=0
+monthNo=0
+playContinueNextMonth(){	
+	while [ $1=1 ]
+	do
+		monthNo=$(($monthNo+1))
+		simulateGameForTwentyDaysHelper
+		echo $monthNo
+		echo $totalWin
+		echo $totalLose
+
+		if [ $totalWin -gt $totalLose ]
+		then
+			winBy=$(($totalWin-$totalLose))
+			echo "Total Amount won : $winBy"
+			echo "Continue Playing"
+			totalWin=0
+			totalLose=0
+			continue
+		else
+			lostBy=$(($totalLose-$totalWin))
+			echo "Total Amount lost : $lostBy"
+			echo "Stop Playing"
+			break
+		fi
+	done
+}
+playContinueNextMonth
