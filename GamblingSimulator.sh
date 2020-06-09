@@ -88,3 +88,31 @@ simulatePerDayOutcome(){
 
 }
 simulatePerDayOutcome
+
+simulateLuckiestUnluckiestDay(){
+	totalDiffAmountTillNow=0
+	maxCurrentDiffAmount=-10000
+	minCurrentDiffAmount=10000
+	luckiestDay=0
+	unluckiestDay=0
+	for (( i=1; i<=20; i++ ))
+	do
+		currentAmount=$STAKE_PER_DAY	
+		simulateOneDayTillResignHelper
+		diff=$(($currentAmount-$STAKE_PER_DAY))
+		totalDiffAmountTillNow=$(($totalDiffAmountTillNow+$diff))
+		if [ $totalDiffAmountTillNow -gt $maxCurrentDiffAmount ]
+		then
+			maxCurrentDiffAmount=$totalDiffAmountTillNow
+			luckiestDay=$i
+		fi
+		if [ $totalDiffAmountTillNow -lt $minCurrentDiffAmount ]
+		then
+			minCurrentDiffAmount=$totalDiffAmountTillNow
+			unluckiestDay=$i
+		fi
+	done
+	echo "luckiest_day : $luckiestDay  Amount : $maxCurrentDiffAmount"
+	echo "unluckiest_day : $unluckiestDay  Amount : $minCurrentDiffAmount"
+}
+simulateLuckiestUnluckiestDay
