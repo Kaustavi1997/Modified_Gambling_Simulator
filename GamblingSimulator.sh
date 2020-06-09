@@ -119,8 +119,8 @@ simulateLuckiestUnluckiestDay
 
 totalWin=0
 totalLose=0
-monthNo=0
-playContinueNextMonth(){	
+playContinueNextMonth(){
+	monthNo=0	
 	while [ $1=1 ]
 	do
 		monthNo=$(($monthNo+1))
