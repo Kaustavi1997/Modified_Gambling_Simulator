@@ -39,4 +39,38 @@ simulateOneDayTillResign(){
 }
 simulateOneDayTillResign
 
+totalWin=0
+totalLose=0
+simulateGameForTwentyDaysHelper(){
+	for (( i=0; i<20; i++ ))
+	do
+		currentAmount=$STAKE_PER_DAY
+		simulateOneDayTillResignHelper
+		if [ $currentAmount -gt $STAKE_PER_DAY ]
+		then
+			winAmountPerDay=$(($currentAmount - $STAKE_PER_DAY))
+			totalWin=$(($totalWin + $winAmountPerDay))
+		else
+			loseAmountPerDay=$(($STAKE_PER_DAY-$currentAmount))
+			totalLose=$(($totalLose + $loseAmountPerDay))
+		fi
+	done
+}
+
+simulateGameForTwentyDays(){
+	simulateGameForTwentyDaysHelper
+	echo $totalWin
+	echo $totalLose
+	if [ $totalWin -gt $totalLose ]
+	then
+		winBy=$(($totalWin-$totalLose))
+		echo "Total Amount won : $winBy"
+	else
+		lostBy=$(($totalLose-$totalWin))
+		echo "Total Amount lost : $lostBy"
+	fi
+}
+
+simulateGameForTwentyDays
+
 
