@@ -18,5 +18,25 @@ simulateOneGame(){
 }
 simulateOneGame
 echo $resultPerGame
+currentAmount=$STAKE_PER_DAY
+read -p "Percentage of Stake:" s;
+simulateOneDayTillResignHelper(){
+	a=$(echo "$s / 100" | bc -l );
+	percentageAmountOnStakePerDay=$(echo "$a * $STAKE_PER_DAY" | bc -l );
+	intPercentageAmountOnStakePerDay=${percentageAmountOnStakePerDay%.*}
+	lowerLimit=$(($STAKE_PER_DAY - $intPercentageAmountOnStakePerDay))
+	upperLimit=$(($STAKE_PER_DAY + $intPercentageAmountOnStakePerDay))
+	while [ $currentAmount -gt $lowerLimit -a $currentAmount -lt $upperLimit ]
+	do
+		simulateOneGame
+		currentAmount=$(($currentAmount+$resultPerGame))
+	done
+}
+simulateOneDayTillResign(){
+	simulateOneDayTillResignHelper
+	echo "Resign for the day"
+	echo $currentAmount
+}
+simulateOneDayTillResign
 
 
