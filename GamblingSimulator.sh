@@ -73,4 +73,18 @@ simulateGameForTwentyDays(){
 
 simulateGameForTwentyDays
 
+arr=()
+simulatePerDayOutcome(){
+	for (( i=1; i<=20; i++ ))
+	do
+		currentAmount=$STAKE_PER_DAY
+		simulateOneDayTillResignHelper
+		arr+=($currentAmount)
+	done
+	for (( i=0; i<20; i++ ))
+	do
+		echo "Day $(($i+1)) : ${arr[$i]}"
+	done
 
+}
+simulatePerDayOutcome
