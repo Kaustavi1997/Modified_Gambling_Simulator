@@ -1,11 +1,14 @@
-#! /bin/bash -x
+#! /bin/bash 
 
 STAKE_PER_DAY=100
 BET_PER_GAME=1
 DAYS_PER_MONTH=20
 
 resultPerGame=-1
-simulateOneGame(){
+totalWin=0
+totalLose=0
+betForAGame(){
+	
 	WIN=1
 
 	check=$((RANDOM%2))
@@ -17,39 +20,38 @@ simulateOneGame(){
 	fi
 }
 echo $resultPerGame
-
 percentageCalculation(){
 	a=$(echo "$s / 100" | bc -l );
 	percentageAmountOnStakePerDay=$(echo "$a * $STAKE_PER_DAY" | bc -l );
 	intPercentageAmountOnStakePerDay=${percentageAmountOnStakePerDay%.*}
 	lowerLimit=$(($STAKE_PER_DAY - $intPercentageAmountOnStakePerDay))
-        upperLimit=$(($STAKE_PER_DAY + $intPercentageAmountOnStakePerDay))
+	upperLimit=$(($STAKE_PER_DAY + $intPercentageAmountOnStakePerDay))
 }
 currentAmount=$STAKE_PER_DAY
 read -p "Percentage of Stake:" s;
-simulateOneDayTillResignHelper(){
+betForOneDayHelper(){
 	percentageCalculation
 	while [ $currentAmount -gt $lowerLimit -a $currentAmount -lt $upperLimit ]
 	do
-		simulateOneGame
+		betForAGame
 		currentAmount=$(($currentAmount+$resultPerGame))
 	done
 }
-simulateOneDayTillResign(){
-	simulateOneDayTillResignHelper
+betForOneDay(){
+	betForOneDayHelper
 	echo "Resign for the day"
 	echo $currentAmount
 }
-simulateOneDayTillResign
+betForOneDay
 
 
-simulateGameForTwentyDaysHelper(){
-	totalWin=0
-	totalLose=0
+betTwentyDaysHelper(){
+	
+	
 	for (( i=0; i<DAYS_PER_MONTH; i++ ))
 	do
 		currentAmount=$STAKE_PER_DAY
-		simulateOneDayTillResignHelper
+		betForOneDayHelper
 		if [ $currentAmount -gt $STAKE_PER_DAY ]
 		then
 			winAmountPerDay=$(($currentAmount - $STAKE_PER_DAY))
@@ -61,8 +63,8 @@ simulateGameForTwentyDaysHelper(){
 	done
 }
 
-simulateGameForTwentyDays(){
-	simulateGameForTwentyDaysHelper
+betTwentyDays(){
+	betTwentyDaysHelper
 	echo $totalWin
 	echo $totalLose
 	if [ $totalWin -gt $totalLose ]
@@ -75,15 +77,16 @@ simulateGameForTwentyDays(){
 	fi
 }
 
-simulateGameForTwentyDays
+betTwentyDays
 
+echo "Per Day Outcome"
 
-simulatePerDayOutcome(){
+PerDayOutcome(){
 	arr=()
 	for (( i=1; i<=DAYS_PER_MONTH; i++ ))
 	do
 		currentAmount=$STAKE_PER_DAY
-		simulateOneDayTillResignHelper
+		betForOneDayHelper
 		arr+=($currentAmount)
 	done
 	for (( i=0; i<DAYS_PER_MONTH; i++ ))
@@ -92,9 +95,11 @@ simulatePerDayOutcome(){
 	done
 
 }
-simulatePerDayOutcome
+PerDayOutcome
 
-simulateLuckiestUnluckiestDay(){
+echo "Per Day Total Difference"
+
+LuckiestUnluckiestDay(){
 	totalDiffAmountTillNow=0
 	maxCurrentDiffAmount=-10000
 	minCurrentDiffAmount=10000
@@ -103,7 +108,7 @@ simulateLuckiestUnluckiestDay(){
 	for (( i=1; i<=DAYS_PER_MONTH; i++ ))
 	do
 		currentAmount=$STAKE_PER_DAY	
-		simulateOneDayTillResignHelper
+		betForOneDayHelper
 		diff=$(($currentAmount-$STAKE_PER_DAY))
 		totalDiffAmountTillNow=$(($totalDiffAmountTillNow+$diff))
 		if [ $totalDiffAmountTillNow -gt $maxCurrentDiffAmount ]
@@ -116,20 +121,22 @@ simulateLuckiestUnluckiestDay(){
 			minCurrentDiffAmount=$totalDiffAmountTillNow
 			unluckiestDay=$i
 		fi
+		echo "Day $i : $totalDiffAmountTillNow"
 	done
 	echo "luckiest_day : $luckiestDay  Amount : $maxCurrentDiffAmount"
 	echo "unluckiest_day : $unluckiestDay  Amount : $minCurrentDiffAmount"
 }
-simulateLuckiestUnluckiestDay
+LuckiestUnluckiestDay
+
 
 playContinueNextMonth(){
-	totalWin=0
+	totalWin=0 //Here I have to initialize or else it is taking previous values
 	totalLose=0
 	monthNo=0	
 	while [ $1=1 ]
 	do
 		monthNo=$(($monthNo+1))
-		simulateGameForTwentyDaysHelper
+		betTwentyDaysHelper
 		echo $monthNo
 		echo $totalWin
 		echo $totalLose
