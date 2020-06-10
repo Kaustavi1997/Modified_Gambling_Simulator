@@ -7,7 +7,6 @@ DAYS_PER_MONTH=20
 resultPerGame=-1
 simulateOneGame(){
 	WIN=1
-	LOSE=0
 
 	check=$((RANDOM%2))
 	if [ $check -eq $WIN ];
@@ -17,17 +16,19 @@ simulateOneGame(){
 		resultPerGame=-$BET_PER_GAME
 	fi
 }
-simulateOneGame
 echo $resultPerGame
 
-currentAmount=$STAKE_PER_DAY
-read -p "Percentage of Stake:" s;
-simulateOneDayTillResignHelper(){
+percentageCalculation(){
 	a=$(echo "$s / 100" | bc -l );
 	percentageAmountOnStakePerDay=$(echo "$a * $STAKE_PER_DAY" | bc -l );
 	intPercentageAmountOnStakePerDay=${percentageAmountOnStakePerDay%.*}
 	lowerLimit=$(($STAKE_PER_DAY - $intPercentageAmountOnStakePerDay))
-	upperLimit=$(($STAKE_PER_DAY + $intPercentageAmountOnStakePerDay))
+        upperLimit=$(($STAKE_PER_DAY + $intPercentageAmountOnStakePerDay))
+}
+currentAmount=$STAKE_PER_DAY
+read -p "Percentage of Stake:" s;
+simulateOneDayTillResignHelper(){
+	percentageCalculation
 	while [ $currentAmount -gt $lowerLimit -a $currentAmount -lt $upperLimit ]
 	do
 		simulateOneGame
@@ -41,9 +42,10 @@ simulateOneDayTillResign(){
 }
 simulateOneDayTillResign
 
-totalWin=0
-totalLose=0
+
 simulateGameForTwentyDaysHelper(){
+	totalWin=0
+	totalLose=0
 	for (( i=0; i<DAYS_PER_MONTH; i++ ))
 	do
 		currentAmount=$STAKE_PER_DAY
@@ -120,9 +122,9 @@ simulateLuckiestUnluckiestDay(){
 }
 simulateLuckiestUnluckiestDay
 
-totalWin=0
-totalLose=0
 playContinueNextMonth(){
+	totalWin=0
+	totalLose=0
 	monthNo=0	
 	while [ $1=1 ]
 	do
